@@ -45,11 +45,31 @@ fn pt1(input: &Vec<Direction>) -> i32 {
     finalx * finaly
 }
 
+
+fn pt2(input: &Vec<Direction>) -> i32 {
+    use Direction::*;
+    let (finalx, finaly, finalaim) = input.iter().fold((0, 0, 0), |(x, y, a), e| {
+        match e {
+            Forward(n) => {
+                (x + n, y + (n * a), a)
+            },
+            Up(n) => {
+                (x, y, a - n)
+            },
+            Down(n) => {
+                (x, y, a + n)
+            }
+        }
+    });
+    finalx * finaly
+}
+
 pub fn main() -> std::io::Result<()> {
     let f = File::open("data/2")?;
     let reader: BufReader<File> = BufReader::new(f);
     let input: Vec<Direction> = parse(reader.lines().map(|i| i.unwrap()).collect());
     println!("pt 1 {}", pt1(&input));
+    println!("pt 2 {}", pt2(&input));
     Ok(())
 }
 
@@ -74,6 +94,12 @@ forward 2";
     fn test_pt1() {
         let input = parse(TEST.lines().map(|i| i.to_string()).collect());
         assert_eq!(pt1(&input),150);
+    }
+
+    #[test]
+    fn test_pt2() {
+        let input = parse(TEST.lines().map(|i| i.to_string()).collect());
+        assert_eq!(pt2(&input), 900);
     }
 
 }
