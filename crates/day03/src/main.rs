@@ -23,6 +23,48 @@ fn get_digits(input: &Vec<String>, digit_position: usize) -> (i32, i32) {
     }
 }
 
+fn get_winner_break_tie(input: &Vec<String>, digit_position: usize, tie_break_default: i32) -> i32 {
+    let mut counter = (0, 0);
+    for num in input {
+        let digits = num.chars().collect::<Vec<char>>();
+        if digits[digit_position] == '0' {
+            counter.0 += 1;
+        } else {
+            counter.1 += 1;
+        }
+    }
+    let (zeros, ones) = counter;
+    if zeros == ones {
+        return tie_break_default;
+    }
+    if zeros > ones {
+        0
+    } else {
+        1
+    }
+}
+
+fn get_loser_break_tie(input: &Vec<String>, digit_position: usize, tie_break_default: i32) -> i32 {
+    let mut counter = (0, 0);
+    for num in input {
+        let digits = num.chars().collect::<Vec<char>>();
+        if digits[digit_position] == '0' {
+            counter.0 += 1;
+        } else {
+            counter.1 += 1;
+        }
+    }
+    let (zeros, ones) = counter;
+    if zeros == ones {
+        return tie_break_default;
+    }
+    if zeros > ones {
+        1
+    } else {
+        0
+    }
+}
+
 fn make_number(bits: Vec<i32>) -> i32 {
     let mut ret = 0;
     for b in bits {
@@ -46,12 +88,72 @@ fn get_gamma_epsilon(input: &Vec<String>) -> (i32, i32) {
     (gamma, epsilon)
 }
 
+fn find_oxygen(input: &Vec<String>) -> i32 {
+    let width = input[0].len();
+    let mut candidates = input.clone();
+    for position in 0..width {
+        if candidates.len() == 1 {
+            break;
+        }
+        let winner = get_winner_break_tie(&candidates, position, 1);
+        candidates = candidates
+            .iter()
+            .filter(|num| {
+                num.chars()
+                    .nth(position)
+                    .unwrap()
+                    .to_string()
+                    .parse::<i32>()
+                    .unwrap()
+                    == winner
+            })
+            .map(|e| e.clone())
+            .collect();
+    }
+    let digits: Vec<_> = candidates[0]
+        .chars()
+        .map(|e| e.to_string().parse::<i32>().unwrap())
+        .collect();
+    make_number(digits)
+}
+
+fn find_co2(input: &Vec<String>) -> i32 {
+    let width = input[0].len();
+    let mut candidates = input.clone();
+    for position in 0..width {
+        if candidates.len() == 1 {
+            break;
+        }
+        let winner = get_loser_break_tie(&candidates, position, 0);
+        candidates = candidates
+            .iter()
+            .filter(|num| {
+                num.chars()
+                    .nth(position)
+                    .unwrap()
+                    .to_string()
+                    .parse::<i32>()
+                    .unwrap()
+                    == winner
+            })
+            .map(|e| e.clone())
+            .collect();
+    }
+    let digits: Vec<_> = candidates[0]
+        .chars()
+        .map(|e| e.to_string().parse::<i32>().unwrap())
+        .collect();
+    make_number(digits)
+}
+
 pub fn main() -> std::io::Result<()> {
     let f = File::open("data/3")?;
     let reader: BufReader<File> = BufReader::new(f);
     let input: Vec<String> = reader.lines().map(|i| i.unwrap()).collect();
     let (g, e) = get_gamma_epsilon(&input);
     println!("pt 1 {}", g * e);
+    let (o, c) = (find_oxygen(&input), find_co2(&input));
+    println!("pt 2 {}", o * c);
     Ok(())
 }
 
@@ -81,9 +183,8 @@ mod tests {
 
     #[test]
     fn test_make_number() {
-        assert_eq!(make_number(vec![1,0]), 2);
-        assert_eq!(make_number(vec![1,1,1,0,0]), 28);
-
+        assert_eq!(make_number(vec![1, 0]), 2);
+        assert_eq!(make_number(vec![1, 1, 1, 0, 0]), 28);
     }
 
     #[test]
@@ -95,4 +196,17 @@ mod tests {
         assert_eq!(g * e, 198);
     }
 
+    #[test]
+    fn test_find_ox() {
+        let input = TEST.lines().map(|i| i.to_string()).collect();
+        let o = find_oxygen(&input);
+        assert_eq!(o, 23);
+    }
+
+    #[test]
+    fn test_find_co2() {
+        let input = TEST.lines().map(|i| i.to_string()).collect();
+        let c = find_co2(&input);
+        assert_eq!(c, 10);
+    }
 }
