@@ -130,13 +130,39 @@ fn pt1(input: &Vec<String>) -> i32 {
     }
     // lol?
     0
+}
 
+fn pt2(input: &Vec<String>) -> i32 {
+    // like above, but keep going until you find the last one
+    let mut game: Game = input.into();
+    let board_count = game.boards.len();
+    let mut winner_ids = vec![];
+    for i in 0..game.called_numbers.len() {
+        let n = game.called_numbers[i];
+        game.call_number(&n);
+        let winners: Vec<&Board> = game.boards.iter().filter(|e| e.is_winner()).collect();
+        if winners.len() == board_count {
+            let current_ids: Vec<_> = game.boards.iter().enumerate().map(|(i, _e)| i).collect();
+            for id in current_ids {
+                if !winner_ids.contains(&id) {
+                    let uncalled_sum = game.boards[id].get_uncalled_numbers().iter().fold(0, |acc, n| acc + n);
+                    return uncalled_sum * n;
+                }
+            }
+        } else {
+            winner_ids = game.boards.iter().enumerate().filter(|(i, e)| e.is_winner()).map(|(i, e)| i).collect();
+        }
+    }
+    // lol?
+    0
 }
 
 pub fn main() -> std::io::Result<()> {
     let f = File::open("data/4")?;
     let reader: BufReader<File> = BufReader::new(f);
     let input: Vec<String> = reader.lines().map(|i| i.unwrap()).collect();
+    println!("pt 1: {}", pt1(&input));
+    println!("pt 2: {}", pt2(&input));
     Ok(())
 }
 
@@ -243,6 +269,13 @@ mod tests {
         let input: &Vec<String> = &TEST.lines().map(|i| i.to_string()).collect();
         let answer = pt1(input);
         assert_eq!(answer, 4512);
+    }
+
+    #[test]
+    fn test_example2() {
+        let input: &Vec<String> = &TEST.lines().map(|i| i.to_string()).collect();
+        let answer = pt2(input);
+        assert_eq!(answer, 1924);
     }
 
 }
