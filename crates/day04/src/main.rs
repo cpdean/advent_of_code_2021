@@ -118,13 +118,14 @@ impl Board {
 
 fn pt1(input: &Vec<String>) -> i32 {
     let mut game: Game = input.into();
-    for n in &game.called_numbers {
-        game.call_number(n);
+    for i in 0..game.called_numbers.len() {
+        let n = game.called_numbers[i];
+        game.call_number(&n);
         if game.has_winner() {
             let winners: Vec<&Board> = game.boards.iter().filter(|b| b.is_winner()).collect();
             let first_winner = winners[0];
             let uncalled_sum = first_winner.get_uncalled_numbers().iter().fold(0, |acc, n| acc + n);
-            return uncalled_sum + n;
+            return uncalled_sum * n;
         }
     }
     // lol?
