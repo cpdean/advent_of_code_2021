@@ -5,7 +5,7 @@ use std::io::BufReader;
 
 struct Game {
     called_numbers: Vec<i32>,
-    boards: Vec<Board>
+    boards: Vec<Board>,
 }
 
 impl Game {
@@ -28,21 +28,23 @@ impl Game {
 impl From<&Vec<String>> for Game {
     fn from(lines: &Vec<String>) -> Self {
         let mut boards = vec![];
-        let called_numbers = lines[0].split(",").map(|n| n.parse::<i32>().unwrap()).collect();
+        let called_numbers = lines[0]
+            .split(",")
+            .map(|n| n.parse::<i32>().unwrap())
+            .collect();
         let board_count = (lines.len() - 1) / 6;
         for i in 0..board_count {
             let board_start = (i * 6) + 1;
             let board_lines = (board_start + 1)..(board_start + 6);
             let mut board_grid = vec![];
             for x in board_lines {
-                let numbers = lines[x].split(" ").filter_map(|e| e.parse::<i32>().ok()).collect::<Vec<_>>();
-                board_grid.push(
-                    numbers
-                );
+                let numbers = lines[x]
+                    .split(" ")
+                    .filter_map(|e| e.parse::<i32>().ok())
+                    .collect::<Vec<_>>();
+                board_grid.push(numbers);
             }
-            boards.push(
-                board_grid.into()
-            )
+            boards.push(board_grid.into())
         }
         Game {
             called_numbers,
@@ -62,7 +64,7 @@ impl From<Vec<Vec<i32>>> for Board {
 
 struct Board {
     grid: Vec<Vec<i32>>,
-    marked: Vec<(i32, (usize, usize))>
+    marked: Vec<(i32, (usize, usize))>,
 }
 
 impl Board {
@@ -124,7 +126,10 @@ fn pt1(input: &Vec<String>) -> i32 {
         if game.has_winner() {
             let winners: Vec<&Board> = game.boards.iter().filter(|b| b.is_winner()).collect();
             let first_winner = winners[0];
-            let uncalled_sum = first_winner.get_uncalled_numbers().iter().fold(0, |acc, n| acc + n);
+            let uncalled_sum = first_winner
+                .get_uncalled_numbers()
+                .iter()
+                .fold(0, |acc, n| acc + n);
             return uncalled_sum * n;
         }
     }
@@ -145,12 +150,21 @@ fn pt2(input: &Vec<String>) -> i32 {
             let current_ids: Vec<_> = game.boards.iter().enumerate().map(|(i, _e)| i).collect();
             for id in current_ids {
                 if !winner_ids.contains(&id) {
-                    let uncalled_sum = game.boards[id].get_uncalled_numbers().iter().fold(0, |acc, n| acc + n);
+                    let uncalled_sum = game.boards[id]
+                        .get_uncalled_numbers()
+                        .iter()
+                        .fold(0, |acc, n| acc + n);
                     return uncalled_sum * n;
                 }
             }
         } else {
-            winner_ids = game.boards.iter().enumerate().filter(|(i, e)| e.is_winner()).map(|(i, e)| i).collect();
+            winner_ids = game
+                .boards
+                .iter()
+                .enumerate()
+                .filter(|(i, e)| e.is_winner())
+                .map(|(i, e)| i)
+                .collect();
         }
     }
     // lol?
@@ -214,11 +228,8 @@ mod tests {
         let mut game: Game = input.into();
         let board = &mut game.boards[0];
         let calls = vec![
-            22,
-            13,
-            //17,
-            11,
-            0,
+            22, 13, //17,
+            11, 0,
         ];
         for n in calls {
             board.call_number(&n);
@@ -233,13 +244,7 @@ mod tests {
         let input: &Vec<String> = &TEST.lines().map(|i| i.to_string()).collect();
         let mut game: Game = input.into();
         let board = &mut game.boards[0];
-        let calls = vec![
-            22,
-            8,
-            21,
-            6,
-            1,
-        ];
+        let calls = vec![22, 8, 21, 6, 1];
         for n in calls {
             board.call_number(&n);
         }
@@ -251,13 +256,7 @@ mod tests {
         let input: &Vec<String> = &TEST.lines().map(|i| i.to_string()).collect();
         let mut game: Game = input.into();
         let board = &mut game.boards[0];
-        let calls = vec![
-            0,
-            24,
-            7,
-            5,
-            19,
-        ];
+        let calls = vec![0, 24, 7, 5, 19];
         for n in calls {
             board.call_number(&n);
         }
@@ -277,5 +276,4 @@ mod tests {
         let answer = pt2(input);
         assert_eq!(answer, 1924);
     }
-
 }
