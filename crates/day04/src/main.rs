@@ -10,8 +10,8 @@ struct Game {
 
 impl Game {
     pub fn call_number(&mut self, n: &i32) {
-        for b in &self.boards {
-            b.call_number(n);
+        for i in 0..self.boards.len() {
+            self.boards[i].call_number(n);
         }
     }
 
@@ -30,7 +30,7 @@ impl From<&Vec<String>> for Game {
         let mut boards = vec![];
         let called_numbers = lines[0].split(",").map(|n| n.parse::<i32>().unwrap()).collect();
         let board_count = (lines.len() - 1) / 6;
-        for i in 0..dbg!(board_count) {
+        for i in 0..board_count {
             let board_start = (i * 6) + 1;
             let board_lines = (board_start + 1)..(board_start + 6);
             let mut board_grid = vec![];
@@ -177,7 +177,7 @@ mod tests {
         let input: &Vec<String> = &TEST.lines().map(|i| i.to_string()).collect();
         let mut game: Game = input.into();
         let board = &mut game.boards[0];
-        board.call_number(24);
+        board.call_number(&24);
         assert_eq!(board.marked.len(), 1);
     }
 
@@ -194,10 +194,10 @@ mod tests {
             0,
         ];
         for n in calls {
-            board.call_number(n);
+            board.call_number(&n);
         }
         assert_eq!(board.is_winner(), false);
-        board.call_number(17);
+        board.call_number(&17);
         assert_eq!(board.is_winner(), true);
     }
 
@@ -214,7 +214,7 @@ mod tests {
             1,
         ];
         for n in calls {
-            board.call_number(n);
+            board.call_number(&n);
         }
         assert_eq!(board.is_winner(), true);
     }
@@ -232,9 +232,16 @@ mod tests {
             19,
         ];
         for n in calls {
-            board.call_number(n);
+            board.call_number(&n);
         }
         assert_eq!(board.is_winner(), true);
+    }
+
+    #[test]
+    fn test_example() {
+        let input: &Vec<String> = &TEST.lines().map(|i| i.to_string()).collect();
+        let answer = pt1(input);
+        assert_eq!(answer, 4512);
     }
 
 }
