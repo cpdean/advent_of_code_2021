@@ -63,7 +63,7 @@ fn pt1(vents: &Vec<Vent>) -> usize {
     // remove diagonals. only look at vertical or horizontal vents
     let no_diagonal = vents.iter().filter(|e| {
         e.x1 == e.x2 || e.y1 == e.y2
-    }).map(|e| e.clone()).collect();
+    }).map(|e| e.clone()).collect(); // clone here because i don't want to figure out efficient alloc stuff
 
 
     let mut danger_map: HashMap<(i32, i32), usize> = HashMap::new();
@@ -74,8 +74,43 @@ fn pt1(vents: &Vec<Vent>) -> usize {
     danger_map.values().filter(|e| **e > 1).count()
 }
 
+fn pt2_apply_danger(danger_map:&mut HashMap<(i32, i32), usize>, vents: &Vec<Vent>) {
+    // diagonals are a little trickier
+    for v in vents {
+        // since the problem guarantees 45 degree angles, we can model it as
+        // a (physics) vector, a unit vector like (1,1)
+
+        let x_delta = if v.x1 < v.x2 {1} else {-1};
+        let y_delta = if v.y1 < v.y2 {1} else {-1};
+        let mut current_x = v.x1;
+        let mut current_y = v.y1;
+
+        while current_x != v.x2 { // could add y-check, but we can be lazy
+            let here = danger_map.entry((current_x, current_y)).or_insert(0);
+            *here += 1;
+            current_x += x_delta;
+            current_y += y_delta;
+        }
+        // break condition is on arrival, so do it one last time
+        let here = danger_map.entry((current_x, current_y)).or_insert(0);
+        *here += 1;
+    }
+}
+
 fn pt2(vents: &Vec<Vent>) -> usize {
-    0
+    let mut danger_map: HashMap<(i32, i32), usize> = HashMap::new();
+    let no_diagonal = vents.iter().filter(|e| {
+        e.x1 == e.x2 || e.y1 == e.y2
+    }).map(|e| e.clone()).collect(); // clone here because i don't want to figure out efficient alloc stuff
+    pt1_apply_danger(&mut danger_map, &no_diagonal);
+
+    let diagonal: Vec<Vent> = vents.iter().filter(|e| {
+        !(e.x1 == e.x2 || e.y1 == e.y2)
+    }).map(|e| e.clone()).collect(); // clone here because i don't want to figure out efficient alloc stuff
+    pt2_apply_danger(&mut danger_map, &no_diagonal);
+
+    // collect points with danger greater than 1
+    danger_map.values().filter(|e| **e > 1).count()
 }
 
 pub fn main() -> std::io::Result<()> {
@@ -84,6 +119,8 @@ pub fn main() -> std::io::Result<()> {
     let input: Vec<String> = reader.lines().map(|i| i.unwrap()).collect();
     let vents: Vec<Vent> = input.iter().map(|e| e.into()).collect();
     println!("pt1: {}", pt1(&vents));
+    println!("pt2: {}", pt2(&vents));
+    // 13385 is too low?
     Ok(())
 }
 
