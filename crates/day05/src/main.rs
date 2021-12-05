@@ -3,6 +3,7 @@ use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
 
+#[derive(Clone)]
 struct Vent {
     x1: i32,
     y1: i32,
@@ -32,14 +33,8 @@ impl From<&String> for Vent {
     }
 }
 
-fn pt1(vents: &Vec<Vent>) -> usize {
-    // remove diagonals. only look at vertical or horizontal vents
-    let no_diagonal = vents.iter().filter(|e| {
-        e.x1 == e.x2 || e.y1 == e.y2
-    });
-    let mut danger_map: HashMap<(i32, i32), usize> = HashMap::new();
-    
-    for v in no_diagonal {
+fn pt1_apply_danger(danger_map:&mut HashMap<(i32, i32), usize>, vents: &Vec<Vent>) {
+    for v in vents {
         // mark the start/end before iterating so the iteration code is simpler
         let source = danger_map.entry((v.x1, v.y1)).or_insert(0);
         *source += 1;
@@ -62,9 +57,25 @@ fn pt1(vents: &Vec<Vent>) -> usize {
             }
         }
     }
+}
+
+fn pt1(vents: &Vec<Vent>) -> usize {
+    // remove diagonals. only look at vertical or horizontal vents
+    let no_diagonal = vents.iter().filter(|e| {
+        e.x1 == e.x2 || e.y1 == e.y2
+    }).map(|e| e.clone()).collect();
+
+
+    let mut danger_map: HashMap<(i32, i32), usize> = HashMap::new();
+    
+    pt1_apply_danger(&mut danger_map, &no_diagonal);
 
     // collect points with danger greater than 1
     danger_map.values().filter(|e| **e > 1).count()
+}
+
+fn pt2(vents: &Vec<Vent>) -> usize {
+    0
 }
 
 pub fn main() -> std::io::Result<()> {
@@ -105,6 +116,13 @@ mod tests {
         let input: Vec<String> = TEST.lines().map(|i| i.to_string()).collect();
         let vents: Vec<Vent> = input.iter().map(|e| e.into()).collect();
         assert_eq!(pt1(&vents), 5);
+    }
+
+    #[test]
+    fn test_example2() {
+        let input: Vec<String> = TEST.lines().map(|i| i.to_string()).collect();
+        let vents: Vec<Vent> = input.iter().map(|e| e.into()).collect();
+        assert_eq!(pt2(&vents), 12);
     }
 
 
