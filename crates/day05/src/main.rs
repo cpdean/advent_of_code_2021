@@ -107,7 +107,7 @@ fn pt2(vents: &Vec<Vent>) -> usize {
     let diagonal: Vec<Vent> = vents.iter().filter(|e| {
         !(e.x1 == e.x2 || e.y1 == e.y2)
     }).map(|e| e.clone()).collect(); // clone here because i don't want to figure out efficient alloc stuff
-    pt2_apply_danger(&mut danger_map, &no_diagonal);
+    pt2_apply_danger(&mut danger_map, &diagonal);
 
     // collect points with danger greater than 1
     danger_map.values().filter(|e| **e > 1).count()
