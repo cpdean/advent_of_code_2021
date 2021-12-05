@@ -33,7 +33,7 @@ impl From<&String> for Vent {
     }
 }
 
-fn pt1_apply_danger(danger_map:&mut HashMap<(i32, i32), usize>, vents: &Vec<Vent>) {
+fn pt1_apply_danger(danger_map:&mut HashMap<(i32, i32), usize>, vents: &Vec<&Vent>) {
     for v in vents {
         // mark the start/end before iterating so the iteration code is simpler
         let source = danger_map.entry((v.x1, v.y1)).or_insert(0);
@@ -63,7 +63,7 @@ fn pt1(vents: &Vec<Vent>) -> usize {
     // remove diagonals. only look at vertical or horizontal vents
     let no_diagonal = vents.iter().filter(|e| {
         e.x1 == e.x2 || e.y1 == e.y2
-    }).map(|e| e.clone()).collect(); // clone here because i don't want to figure out efficient alloc stuff
+    }).collect();
 
 
     let mut danger_map: HashMap<(i32, i32), usize> = HashMap::new();
@@ -74,7 +74,7 @@ fn pt1(vents: &Vec<Vent>) -> usize {
     danger_map.values().filter(|e| **e > 1).count()
 }
 
-fn pt2_apply_danger(danger_map:&mut HashMap<(i32, i32), usize>, vents: &Vec<Vent>) {
+fn pt2_apply_danger(danger_map:&mut HashMap<(i32, i32), usize>, vents: &Vec<&Vent>) {
     // diagonals are a little trickier
     for v in vents {
         // since the problem guarantees 45 degree angles, we can model it as
@@ -101,12 +101,12 @@ fn pt2(vents: &Vec<Vent>) -> usize {
     let mut danger_map: HashMap<(i32, i32), usize> = HashMap::new();
     let no_diagonal = vents.iter().filter(|e| {
         e.x1 == e.x2 || e.y1 == e.y2
-    }).map(|e| e.clone()).collect(); // clone here because i don't want to figure out efficient alloc stuff
+    }).collect();
     pt1_apply_danger(&mut danger_map, &no_diagonal);
 
-    let diagonal: Vec<Vent> = vents.iter().filter(|e| {
+    let diagonal = vents.iter().filter(|e| {
         !(e.x1 == e.x2 || e.y1 == e.y2)
-    }).map(|e| e.clone()).collect(); // clone here because i don't want to figure out efficient alloc stuff
+    }).collect();
     pt2_apply_danger(&mut danger_map, &diagonal);
 
     // collect points with danger greater than 1
