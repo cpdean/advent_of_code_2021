@@ -1,4 +1,4 @@
-use std::{fs::File, io::{BufRead, BufReader}};
+use std::{fs::File, io::{BufRead, BufReader}, time::Instant};
 
 
 
@@ -17,6 +17,25 @@ fn pt1(input: &Vec<i32>) -> usize {
     population.len()
 }
 
+fn pt2(input: &Vec<i32>) -> usize {
+    let mut population: Vec<i32> = input.clone();
+    for i in 0..256 {
+        print!("day {} ", i);
+        let now = Instant::now();
+        for fish in 0..population.len() {
+            if population[fish] == 0 {
+                population[fish] = 6;
+                population.push(8);
+            } else {
+                population[fish] -= 1;
+            }
+        }
+        print!("population: {} ", population.len());
+        println!("took: {:?} ", now.elapsed());
+    }
+    population.len()
+}
+
 pub fn main() -> std::io::Result<()> {
     let f = File::open("data/6")?;
     let reader: BufReader<File> = BufReader::new(f);
@@ -25,6 +44,7 @@ pub fn main() -> std::io::Result<()> {
         i.split(",").map(|e| e.parse().unwrap())
     }).flatten().collect();
     println!("pt1: {}", pt1(&input));
+    println!("pt2: {}", pt2(&input));
     Ok(())
 }
 
