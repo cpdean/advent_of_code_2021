@@ -20,7 +20,10 @@ fn pt1(input: &Vec<i32>) -> usize {
 pub fn main() -> std::io::Result<()> {
     let f = File::open("data/6")?;
     let reader: BufReader<File> = BufReader::new(f);
-    let input: Vec<i32> = reader.lines().map(|i| i.unwrap().parse().unwrap()).collect();
+    let lines: Vec<String> = reader.lines().map(|i| i.unwrap()).collect();
+    let input: Vec<i32> = lines.iter().map(|i| {
+        i.split(",").map(|e| e.parse().unwrap())
+    }).flatten().collect();
     println!("pt1: {}", pt1(&input));
     Ok(())
 }
