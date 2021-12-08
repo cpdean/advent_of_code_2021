@@ -34,8 +34,7 @@ For each display, you watch the changing signals for a while, make a note of all
 
 For example, here is what you might see in a single entry in your notes:
 
-acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab |
-cdfeb fcadb cdfeb cdbaf
+acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf
 
 (The entry is wrapped here to two lines so it fits; in your notes, it will all be on a single line.)
 
