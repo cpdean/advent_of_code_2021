@@ -55,8 +55,10 @@ fn pt1(entries: &Vec<SignalEntry>) -> i32 {
     count as i32
 }
 
+/*
 fn pt2_decode(entry: &SignalEntry) -> Vec<i32> {
 }
+*/
 
 pub fn main() -> std::io::Result<()> {
     let f = File::open("data/8")?;
