@@ -1,8 +1,26 @@
-use std::{fs::File, io::{BufRead, BufReader}};
+use std::{collections::HashSet, fs::File, io::{BufRead, BufReader}};
 
 struct SignalEntry {
     signals: Vec<String>,
     output: Vec<String>,
+}
+
+enum Segment {
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+}
+
+struct PotentialNumbers(Vec<i32>);
+
+impl From<HashSet<Segment>> for PotentialNumbers {
+    fn from(_: HashSet<Segment>) -> Self {
+        todo!()
+    }
 }
 
 impl From<&String> for SignalEntry {
@@ -37,6 +55,9 @@ fn pt1(entries: &Vec<SignalEntry>) -> i32 {
     count as i32
 }
 
+fn pt2_decode(entry: &SignalEntry) -> Vec<i32> {
+}
+
 pub fn main() -> std::io::Result<()> {
     let f = File::open("data/8")?;
     let reader: BufReader<File> = BufReader::new(f);
@@ -66,6 +87,13 @@ gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
         let input: Vec<String> = TEST.lines().map(|i| i.to_string()).collect();
         let entries: Vec<SignalEntry> = input.iter().map(|e| e.into()).collect();
         assert_eq!(pt1(&entries), 26);
+    }
+
+    #[test]
+    fn test_example2() {
+        let input: Vec<String> = TEST.lines().map(|i| i.to_string()).collect();
+        let entries: Vec<SignalEntry> = input.iter().map(|e| e.into()).collect();
+        assert_eq!(pt2_decode(&entries[0]), vec![5,3,5,3]);
     }
 
     // #[test]
