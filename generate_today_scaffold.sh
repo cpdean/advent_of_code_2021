@@ -29,7 +29,7 @@ generate_puzzle_input() {
 }
 
 TODAY=$(date "+%d")
-GENERATE_DATE="${1:-TODAY}"
+GENERATE_DATE="${1:-$TODAY}"
 
 generate_crate $GENERATE_DATE
 generate_puzzle_input $GENERATE_DATE
