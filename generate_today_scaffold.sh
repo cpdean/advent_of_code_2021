@@ -23,6 +23,7 @@ generate_puzzle_input() {
     if [ -z "$AOC_SESSION_TOKEN" ]
     then
         echo export AOC_SESSION_TOKEN="session cookie"
+        exit 1
     else
         curl -b session=$AOC_SESSION_TOKEN https://adventofcode.com/2021/day/$1/input > data/$1
     fi
